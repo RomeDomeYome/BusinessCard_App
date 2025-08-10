@@ -1,10 +1,15 @@
 package com.example.businesscard
 
+import android.R.attr.onClick
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +44,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import com.example.businesscard.Footer
 import com.example.businesscard.ui.theme.BusinessCardTheme
 import java.nio.file.WatchEvent
@@ -66,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Header(name: String, title: String, modifier: Modifier = Modifier) {
-    val logo = painterResource(R.drawable._980884353219830319)
+        val logo = painterResource(R.drawable._980884353219830319)
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -106,6 +112,7 @@ fun Footer(phone: String, social: String, email: String, modifier: Modifier = Mo
     val githubIcon = painterResource(R.drawable.github_13171412)
     val emailIcon = painterResource(R.drawable.email_icon)
 
+    //the linked RomeDomeYome text
     val socialAntdd: AnnotatedString = buildAnnotatedString {
         append(social)
         addStyle(
@@ -114,13 +121,19 @@ fun Footer(phone: String, social: String, email: String, modifier: Modifier = Mo
                 textDecoration = TextDecoration.Underline
             ), start = 0, end = social.length
         )
-        addUrlAnnotation(
-            UrlAnnotation("github.com/RomeDomeYome"),
+        addLink(
+            url = LinkAnnotation.Url(
+                url = "https://github.com/RomeDomeYome",
+                styles = null,
+                linkInteractionListener = null
+            ),
             start = 0,
             end = social.length
         )
     }
     val uriHandler = LocalUriHandler.current
+
+    //function to open email when clicking the email on the card
 
 
     Column(
@@ -156,7 +169,14 @@ fun Footer(phone: String, social: String, email: String, modifier: Modifier = Mo
                 modifier.size(30.dp)
             )
             Text(
-                text = email
+                text = email,
+                textDecoration = TextDecoration.Underline,
+                color = Color.Blue,
+                modifier = Modifier
+                    .clickable {
+                        val intent = Intent(Intent.ACTION_SENDTO)
+                        intent.type = email
+                    }
             )
         }
         Row(
@@ -170,13 +190,8 @@ fun Footer(phone: String, social: String, email: String, modifier: Modifier = Mo
                 contentDescription = null,
                 modifier.size(30.dp)
             )
-            TextWithLinks(
-                text = socialAntdd,
-                    onClick = { socialAntdd.getUrlAnnotations(it, it)
-                    .firstOrNull()?.let { annotation ->
-                            uriHandler.openUri(annotation.item.url)
-                        }
-                    }
+            Text(
+                text = socialAntdd
             )
         }
     }
